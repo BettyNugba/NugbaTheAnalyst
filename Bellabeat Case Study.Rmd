@@ -1,0 +1,116 @@
+---
+title: "Bellabeat Case Study"
+author: "Betty Nugba"
+date: "11/30/2021"
+output:
+  html_document: default
+---
+options(knitr.duplicate.label = "allow")
+
+
+##Bellabeat Company
+Bellabeat, a high-tech company founded by Urška Sršen and Sando Mur. Since it was founded in 2013, Bellabeat has grown rapidly and quickly positioned itself as a tech-driven wellness company for women. It has empowered women by enabling them collect data on activity, sleep, stress, and reproductive health which was the vision of Sršen when she beautifully designed the technology due to the  background in arts. Bellabeat has invested in numerous advertising channels, and believes that analysis of existing fitness tracking will help the company in which channels of martketing to focus on and improve. 
+
+##Questions asked
+*What are some trends in smart device usage?
+*How could these trends apply to Bellabeat customers?
+*How could these trends help influence Bellabeat marketing strategy
+
+##Business task
+To identify trends in the usage of smart devices, determine how these trends could apply to Bellabeat customers and how these trends could help influence the bellabeat marketing strategy.
+
+##Data source
+FitBit Fitness Tracker Data made available on Kaggle through Mobius. It contains personal fitness tracker from thirty fitbit users which include minute-level output for physical activity, heart rate, and sleep monitoring. It includes information about daily activity, steps, and heart rate. the participants consented to the submission and use of their personal data
+
+##Data manipulation 
+```{r load packages}
+library(tidyverse)
+library(dplyr)
+library(tibble)
+library(readr)
+library(purrr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+```
+```{r Import dataset}
+Activity <- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/dailyActivity_merged.csv")
+Calories <- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/dailyCalories_merged.csv")
+Intensities<- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/dailyIntensities_merged.csv")
+Steps <- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/dailySteps_merged.csv")
+Heartrate<- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/heartrate_seconds_merged.csv")
+Sleepday <- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/sleepDay_merged.csv")
+WeightLogInfo <- read_csv("Downloads/2021-21-11_Fitabase Data 4.12.16-5.12.16/weightLogInfo_merged.csv")
+```
+
+##Data Analysis
+```{r}
+summary(Activity)
+```
+##Data summary
+*According to the sumary table, the difference between the maximum Tracker Distance and the logged activity distance is 23.0879. The very active distance recorded by the app is 21.920. This means that the customers do not log in their activity distance.
+*The mean sedentary minutes is 804 while the mean very active minutes is 24.17 which means that most customers are either usually sedentary or the sedentary minutes is affected by their daily routine. We can rule a number of factors by associating sedentary minutes with calories burned. 
+
+
+```{r We visualize the relationship between Total Steps and Calories}
+ggplot(data=Activity, aes(x=TotalSteps, y=Calories)) + 
+  geom_point() + geom_smooth() + labs(title="Total Steps vs. Calories")
+```
+* The data has a linear relationship. The more steps the customer takes, the more calories burned.
+```{r Load packages}
+library(hrbrthemes)
+library(viridis)
+```
+
+```{r visualize relationship between Logged Activities Distance and Total distance}
+ggplot(data=Activity, aes(x= LoggedActivitiesDistance, y= TotalDistance)) +  
+    geom_jitter(color="black", size=0.4, alpha=0.9) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Logged distance vs Total distance") +
+    xlab("")
+```
+*The graph displayed above shows that most customers do not log in their activity distance, which is also tracked by the app.
+
+## Now let's check the number of times info was logged into each dataset
+```{r}
+Activity %>% count(Id)
+Calories %>% count(Id)
+Intensities %>% count(Id)
+Steps %>% count(Id)
+Heartrate %>% count(Id)
+Sleepday %>% count(Id)
+WeightLogInfo %>% count(Id)
+```
+*Most participants logged in for the entire month in the Activity dataset, Calories, Intensities and Steps dataset unlike the others, WeightLogInfo and Sleepday. The difference seen in the number of enteries could be attributed to the type of entry. 
+*In the activity dataset for instance, the app tracks total steps and calculates the total distance so the individual doe not have to. 
+*The difference is seen in logged activity distance when the customers have to log in the data manually. The graph is displayed below. 
+
+ 
+
+```{r merge data}
+merge_data2 <- merge(WeightLogInfo, Calories, by = "Id", all=TRUE)
+```
+```{r}
+summary(merge_data2)
+```
+
+##And now the relationship between weight (kg) and Calories
+```{r Histogram}
+ggplot(data=merge_data2, aes(x= WeightKg, y= Calories)) +  
+  geom_histogram(stat = "identity", fill='darkblue') +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title=" Calories vs WeightKg")
+```
+*The histogram displays the relationship between Weight (Kg) and Calories. High calorie burns are seen among customers with about 60kg weight and between 80kn and 90kg with quite a number of people below 200000calories, about the average amount burned in a day.
+
+##Summary
+###Below are some insights and recommendations.
+*Maximum activity was found in the Activity, Calories and Intensity datasets. This could be due to the fact that the app tracks the activity of the user and estimate the amount of calories burned. The same level of activity is not seen when customers have to log in their data like in the Sleepday and WeightLogInfo datasets. Bellabeat can focus their fitness products on ones that can track the activity of their customers without them having to constantly log in data.
+*Considering the linear relationship between Total distance and calories burned, Bellabeat can market through campaigns. Encouraging women to be more active in order to burn more calories and possible add an incentive at the end of the campaign to encourage customers to participate.
+*Bellabeat can design products to track the progess of a customer against a set goal or target since some customers log in their weight info and BMI while tracking their Calories.
+
+
