@@ -2,7 +2,9 @@
 title: "Bellabeat Case Study"
 author: "Betty Nugba"
 date: "11/30/2021"
-output: rmarkdown::github_document
+output: 
+  html_document:
+    keep_md: true
 ---
 options(knitr.duplicate.label = "allow")
 
